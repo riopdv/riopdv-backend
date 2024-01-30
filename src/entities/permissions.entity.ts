@@ -1,7 +1,5 @@
 enum Permission {
-
-    'ADMIN',
-
+  'ADMIN',
 }
 
 export default Permission
