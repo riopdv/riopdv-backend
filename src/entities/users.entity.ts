@@ -25,6 +25,13 @@ export interface UserDto {
   createdAt: Date
 }
 
+const UserLoginSchema = z.object({
+  userName: z.string(),
+  password: z.string(),
+})
+
+export class UserLoginDto extends createZodDto(UserLoginSchema) {}
+
 const CreateUserSchema = z.object({
   userName: z.string().min(3).max(16),
   email: z.string().email(),
@@ -32,7 +39,7 @@ const CreateUserSchema = z.object({
   firstName: z.string().min(3).max(32),
   lastName: z.string().min(3).max(64),
 
-  password: z.string().min(8)
+  password: z.string().min(8),
 })
 
 export class CreateUserDto extends createZodDto(CreateUserSchema) {}
