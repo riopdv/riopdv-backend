@@ -1,8 +1,10 @@
 import User, { type CreateUserDto } from 'src/entities/users.entity'
 import { Injectable } from '@nestjs/common'
+import UserNotFoundException from 'src/exceptions/UserNotFoundException'
 
 @Injectable()
 export class UsersService {
+
   private users: User[] = [
     {
       id: 1,
@@ -11,7 +13,7 @@ export class UsersService {
       firstName: 'Sylvino',
       lastName: 'Prevot',
 
-      email: 'sylvino@email.com',
+      email: 'sylvininholol@email.com',
       password: 'sylvino123',
 
       birthday: new Date(),
@@ -21,6 +23,10 @@ export class UsersService {
       createdAt: new Date(),
     },
   ]
+
+  getUserById(id: number): User {
+    return this.users.find((user) => user.id === id)
+  }
 
   getUsers(page: number, limit: number, filters: { [key: string]: string }): User[] {
     return this.users
@@ -48,5 +54,15 @@ export class UsersService {
 
     this.users.push(user)
     return user
+  }
+
+  deleteUser(id: number) {
+    const user: User = this.getUserById(id)
+
+    if (!user) {
+      throw new UserNotFoundException('The user ' + id + ' not found.')
+    }
+
+    this.users.splice(this.users.indexOf(user), 1)
   }
 }

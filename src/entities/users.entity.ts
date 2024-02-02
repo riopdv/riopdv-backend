@@ -3,7 +3,11 @@ import Permission from './permissions.entity'
 import { z } from 'nestjs-zod/z'
 import { createZodDto } from 'nestjs-zod'
 
-export default interface User {
+export default interface User extends UserDto {
+  password: string
+}
+
+export interface UserDto {
   id: number
 
   userName: string
@@ -14,7 +18,6 @@ export default interface User {
 
   avatarUrl: string
 
-  password: string
   permissions: Permission[]
 
   birthday: Date
