@@ -16,7 +16,7 @@ import { UsersService } from 'src/services/users.service';
       isGlobal: true,
     }),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [UsersController],
+  providers: [UsersService],
 })
 export class AppModule {}

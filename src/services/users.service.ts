@@ -6,7 +6,7 @@ import WrongPasswordException from 'src/exceptions/WrongPasswordException'
 
 @Injectable()
 export class UsersService {
-  constructor(readonly jwtService: JwtService) {}
+  constructor(readonly jwtService: JwtService) { }
 
   private users: User[] = [
     {
@@ -27,8 +27,12 @@ export class UsersService {
     },
   ]
 
-  getUser({ key, value }: { key: any; value: any }) {
-    return this.users.find(user => user[key] === value)
+  getUser(filters: { [key in keyof User]?: User[key] }, or: boolean = false) {
+    if (or) {
+      return this.users.find(user => Object.keys(filters).some(key => filters[key] === user[key]))
+    }
+
+    return this.users.find(user => Object.keys(filters).every(key => filters[key] === user[key]))
   }
 
   getUsers(page: number, limit: number, filters: { [key: string]: string }): User[] {
@@ -60,7 +64,7 @@ export class UsersService {
   }
 
   deleteUser(id: number) {
-    const user: User = this.getUser({ key: 'id', value: id })
+    const user: User = this.getUser({ id })
 
     if (!user) {
       throw new UserNotFoundException('The user ' + id + ' not found.')
@@ -72,7 +76,7 @@ export class UsersService {
   async createSession(userLoginDto: UserLoginDto): Promise<string> {
     const { userName, password } = userLoginDto;
 
-    const user: User | null = this.getUser({ key: 'userName', value: userName })
+    const user: User | null = this.getUser({ userName })
 
     if (!user) {
       throw new UserNotFoundException('The user not found.')

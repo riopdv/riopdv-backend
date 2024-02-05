@@ -8,7 +8,7 @@ import { JWT_SECRETS } from 'src/auth/constants'
 
 @Controller('users')
 export class UsersController {
-  constructor(readonly usersService: UsersService) {}
+  constructor(readonly usersService: UsersService) { }
 
   @Get('/')
   getUsers(@Query('page') page: number = 1, @Query('limit') limit: number = 10, @Query('name') name: string = '', @Query('biografia') biografia: string = ''): UserDto[] {
@@ -27,6 +27,14 @@ export class UsersController {
   @UsePipes(ZodValidationPipe)
   @Post('/')
   createUser(@Body() createUserDto: CreateUserDto): UserDto {
+    const { userName, email } = createUserDto
+
+    const user: User = this.usersService.getUser({ userName, email }, true)
+
+    if (user) {
+      throw new HttpException('There are a user with same informations', HttpStatus.CONFLICT)
+    }
+
     return this.usersService.createUser(createUserDto)
   }
 
@@ -71,7 +79,7 @@ export class UsersController {
 
     const { id } = payload
 
-    const user = this.usersService.getUser({ key: 'id', value: id })
+    const user = this.usersService.getUser({ id })
 
     return user
   }
