@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt'
 import { JWT_SECRETS } from '../auth/constants'
 import { ConfigModule } from '@nestjs/config'
-import { UsersController } from 'src/controllers/users.controller'
-import { UsersService } from 'src/services/users.service'
+import { UsersController } from 'src/controllers/users.controller';
+import { UsersService } from 'src/services/users.service';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { UsersService } from 'src/services/users.service'
       isGlobal: true,
     }),
   ],
-  controllers: [UsersController],
-  providers: [UsersService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
