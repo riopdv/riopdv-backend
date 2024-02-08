@@ -1,18 +1,19 @@
 import UserNotFoundException from 'src/exceptions/UserNotFoundException'
 import User, { CreateUserDto, UserDto, UserLoginDto } from 'src/entities/users.entity'
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Query, Req, UsePipes, Request } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Query, UsePipes, Request } from '@nestjs/common'
 import { ZodValidationPipe } from 'nestjs-zod'
 import { UsersService } from 'src/services/users.service'
 import WrongPasswordException from 'src/exceptions/WrongPasswordException'
-import { JWT_SECRETS } from 'src/auth/constants'
 
 @Controller('users')
 export class UsersController {
-  constructor(readonly usersService: UsersService) { }
+  constructor(readonly usersService: UsersService) {}
 
   @Get('/')
   getUsers(@Query('page') page: number = 1, @Query('limit') limit: number = 10, @Query('name') name: string = '', @Query('biografia') biografia: string = ''): UserDto[] {
     const users: User[] = this.usersService.getUsers(page, limit, { name, biografia })
+
+    console.log(process.env.JWT_SECRET)
 
     if (users.length === 0) {
       throw new HttpException('No users found.', HttpStatus.NOT_FOUND)

@@ -1,12 +1,12 @@
 import UserNotFoundException from 'src/exceptions/UserNotFoundException'
-import User, { UserLoginDto, type CreateUserDto } from 'src/entities/users.entity'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import WrongPasswordException from 'src/exceptions/WrongPasswordException'
+import User, { UserLoginDto, type CreateUserDto } from 'src/entities/users.entity'
+import { Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class UsersService {
-  constructor(readonly jwtService: JwtService) { }
+  constructor(readonly jwtService: JwtService) {}
 
   private users: User[] = [
     {
@@ -74,7 +74,7 @@ export class UsersService {
   }
 
   async createSession(userLoginDto: UserLoginDto): Promise<string> {
-    const { userName, password } = userLoginDto;
+    const { userName, password } = userLoginDto
 
     const user: User | null = this.getUser({ userName })
 
