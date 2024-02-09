@@ -1,15 +1,16 @@
 import UserNotFoundException from 'src/exceptions/UserNotFoundException'
 import User, { CreateUserDto, UserDto, UserLoginDto } from 'src/entities/users.entity'
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Query, Req, UsePipes, Request } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Query, UsePipes, Request, UseGuards } from '@nestjs/common'
 import { ZodValidationPipe } from 'nestjs-zod'
 import { UsersService } from 'src/services/users.service'
 import WrongPasswordException from 'src/exceptions/WrongPasswordException'
-import { JWT_SECRETS } from 'src/auth/constants'
+import { AuthGuard } from 'src/guards/auth.guard'
 
 @Controller('users')
 export class UsersController {
   constructor(readonly usersService: UsersService) { }
 
+  @UseGuards(AuthGuard)
   @Get('/')
   getUsers(@Query('page') page: number = 1, @Query('limit') limit: number = 10, @Query('name') name: string = '', @Query('biografia') biografia: string = ''): UserDto[] {
     const users: User[] = this.usersService.getUsers(page, limit, { name, biografia })
@@ -24,6 +25,7 @@ export class UsersController {
     })
   }
 
+  @UseGuards(AuthGuard)
   @UsePipes(ZodValidationPipe)
   @Post('/')
   createUser(@Body() createUserDto: CreateUserDto): UserDto {
@@ -38,6 +40,7 @@ export class UsersController {
     return this.usersService.createUser(createUserDto)
   }
 
+  @UseGuards(AuthGuard)
   @Delete('/:id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     try {
@@ -66,21 +69,9 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('/profile')
   async profile(@Request() req) {
-    const token = req.headers['authorization']
-
-    if (!token) throw new HttpException('Token not found.', HttpStatus.UNAUTHORIZED)
-
-    const payload = await this.usersService.getPayloadFromToken(token)
-
-    if (payload.exp < Date.now()) throw new HttpException('Token expired.', HttpStatus.UNAUTHORIZED)
-    // token ainda está valido
-
-    const { id } = payload
-
-    const user = this.usersService.getUser({ id })
-
-    return user
+    return req.headers['user']
   }
 }

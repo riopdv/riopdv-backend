@@ -1,7 +1,5 @@
 export default class WrongPasswordException extends Error {
-
-    constructor() {
-        super('Wrong password');
-    }
-
+  constructor() {
+    super('Wrong password')
+  }
 }
