@@ -43,3 +43,10 @@ const CreateUserSchema = z.object({
 })
 
 export class CreateUserDto extends createZodDto(CreateUserSchema) {}
+
+export interface Session {
+  id: number
+  
+  createdAt: number
+  expiresAt: number
+}

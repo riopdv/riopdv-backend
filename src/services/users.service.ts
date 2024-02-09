@@ -1,12 +1,12 @@
 import UserNotFoundException from 'src/exceptions/UserNotFoundException'
 import WrongPasswordException from 'src/exceptions/WrongPasswordException'
-import User, { UserLoginDto, type CreateUserDto } from 'src/entities/users.entity'
-import { Injectable } from '@nestjs/common'
+import User, { UserLoginDto, type CreateUserDto, Session } from 'src/entities/users.entity'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class UsersService {
-  constructor(readonly jwtService: JwtService) {}
+  constructor(readonly jwtService: JwtService) {  }
 
   private users: User[] = [
     {
@@ -74,7 +74,7 @@ export class UsersService {
   }
 
   async createSession(userLoginDto: UserLoginDto): Promise<string> {
-    const { userName, password } = userLoginDto
+    const { userName, password } = userLoginDto;
 
     const user: User | null = this.getUser({ userName })
 
@@ -86,11 +86,11 @@ export class UsersService {
       throw new WrongPasswordException()
     }
 
-    const payload = { id: user.id }
+    const payload: Session = { id: user.id, createdAt: Date.now(), expiresAt: Date.now() + (1000 * 60 * 60 * 8) }
     return await this.jwtService.signAsync(payload)
   }
 
-  async getPayloadFromToken(token: string): Promise<any> {
-    return await this.jwtService.verifyAsync(token)
+  async getPayloadFromToken(token: string): Promise<Session> {
+    return await this.jwtService.verifyAsync<Session>(token)
   }
 }
